@@ -12,7 +12,7 @@ use validator::Validate;
 
 use crate::{
     db::UserExt,
-    dtos::{LoginUserDto, RegisterUserDto, Response, UserLoginResponseDto},
+    dto::{LoginUserDto, RegisterUserDto, Response, UserLoginResponseDto},
     error::{ErrorMessage, HttpError},
     utils::{keys::generate_key, password, token},
     AppState,
@@ -43,13 +43,13 @@ pub async fn register(
         Ok(user) => {
             let _key_result = generate_key(app_state, user).await?;
 
-            Ok(
+            Ok((
                 StatusCode::CREATED,
                 Json(Response {
                     message: "Registrations successful!".to_string(),
                     status: "success",
                 }),
-            )
+            ))
         }
         Err(sqlx::Error::Database(db_err)) => {
             if db_err.is_unique_violation() {
@@ -87,7 +87,7 @@ pub async fn login(
     if password_matched {
         let token = token::create_token(
             &user.id.to_string(),
-            &app_state.env.jwt_secret.as_bytes(),
+            &app_state.env.jwt_key.as_bytes(),
             app_state.env.jwt_maxage,
         )
         .map_err(|e| HttpError::server_error(e.to_string()))?;

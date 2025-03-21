@@ -1,3 +1,4 @@
+
 use axum::{extract::Request, http::header, middleware::Next, response::IntoResponse, Extension};
 use axum_extra::extract::cookie::CookieJar;
 use serde::{Deserialize, Serialize};
@@ -8,7 +9,7 @@ use crate::{
     error::{ErrorMessage, HttpError},
     model::User,
     utils::token,
-    Appstate,
+    AppState,
 };
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
@@ -18,7 +19,7 @@ pub struct JWTAuthMiddleware {
 
 pub async fn auth(
     cookie_jar: CookieJar,
-    Extension(app_state): Extension<Arc<Appstate>>,
+    Extension(app_state): Extension<Arc<AppState>>,
     mut req: Request,
     next: Next,
 ) -> Result<impl IntoResponse, HttpError> {
@@ -38,8 +39,8 @@ pub async fn auth(
                 })
         });
     let token = cookies
-        .ok_or_else(|| HttpError::unauthorized(ErrorMessage::TokenNotPrepared.to_String()))?;
-    let token_details = match token::decode_token(token, app_state.env.jwt_secret.as_bytes()) {
+        .ok_or_else(|| HttpError::unauthorized(ErrorMessage::TokenNotProvided.to_string()))?;
+    let token_details = match token::decode_token(token, app_state.env.jwt_key.as_bytes()) {
         Ok(token_details) => token_details,
         Err(_) => {
             return Err(HttpError::unauthorized(

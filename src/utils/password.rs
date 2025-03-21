@@ -20,7 +20,7 @@ pub fn hash(password: impl Into<String>) -> Result<String, ErrorMessage> {
     let salt = SaltString::generate(&mut OsRng);
     let hash_password = Argon2::default()
         .hash_password(password.as_bytes(), &salt)
-        .map(|_| ErrorMessage::HashingError)?
+        .map_err(|_| ErrorMessage::HashingError)?
         .to_string();
 
     Ok(hash_password)
@@ -36,7 +36,7 @@ pub fn compare(password: &str, hashed_password: &str) -> Result<bool, ErrorMessa
     }
 
     let parsed_hash =
-        PasswordHash::new(hashed_password).map(|_| ErrorMessage::InvalidHashFormat)?;
+        PasswordHash::new(hashed_password).map_err(|_| ErrorMessage::InvalidHashFormat)?;
 
     let password_matched = Argon2::default()
         .verify_password(password.as_bytes(), &parsed_hash)

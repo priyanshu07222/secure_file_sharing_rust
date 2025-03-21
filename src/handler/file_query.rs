@@ -4,7 +4,7 @@ use validator::Validate;
 
 use crate::{
     db::UserExt,
-    dtos::{
+    dto::{
         RequestQueryDto, UserReceiveFileDto, UserReceiveFileListResponseDto, UserSendFileDto,
         UserSendFileListResponseDto,
     },
@@ -31,7 +31,7 @@ pub async fn get_user_shared_files(
     let user_id = &user.user;
     let page = query_params.page.unwrap_or(1);
     let limit = query_params.limit.unwrap_or(10);
-    let user_id = uuid::Uuid::parse_str(&user.id.to_string()).unwrap();
+    let user_id = uuid::Uuid::parse_str(&user.user.id.to_string()).unwrap();
 
     let (shared_files, total_count) = app_state
         .db_client
@@ -39,7 +39,7 @@ pub async fn get_user_shared_files(
         .await
         .map_err(|e| HttpError::server_error(e.to_string()))?;
 
-    let filter_send_files = UserSendFileDto::filter_send_files(&shared_files);
+    let filter_send_files = UserSendFileDto::filter_send_user_files(&shared_files);
 
     let response = UserSendFileListResponseDto {
         status: "success".to_string(),
@@ -62,7 +62,7 @@ pub async fn get_received_shared_files(
     let user_id = &user.user;
     let page = query_params.page.unwrap_or(1);
     let limit = query_params.limit.unwrap_or(10);
-    let user_id = uuid::Uuid::parse_str(&user.id.to_string()).unwrap();
+    let user_id = uuid::Uuid::parse_str(&user.user.id.to_string()).unwrap();
 
     let (receive_files, total_count) = app_state
         .db_client
@@ -70,7 +70,7 @@ pub async fn get_received_shared_files(
         .await
         .map_err(|e| HttpError::server_error(e.to_string()))?;
 
-    let filter_receive_files = UserReceiveFileDto::filter_receive_files(&receive_files);
+    let filter_receive_files = UserReceiveFileDto::filter_receive_user_files(&receive_files);
 
     let response = UserReceiveFileListResponseDto {
         status: "success".to_string(),

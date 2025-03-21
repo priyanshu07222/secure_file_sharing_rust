@@ -2,7 +2,7 @@ use std::sync::Arc;
 
 use crate::{
     db::UserExt,
-    dtos::{
+    dto::{
         EmailListResponseDto, FilterEmailDto, FilterUserDto, NameUpdateDto, Response,
         SearchQueryByEmailDTO, UserData, UserPasswordUpdateDto, UserResponseDto,
     },
@@ -46,7 +46,7 @@ pub async fn get_me(
 pub async fn update_user_name(
     Extension(app_state): Extension<Arc<AppState>>,
     Extension(user): Extension<JWTAuthMiddleware>,
-    Json(body): Json,
+    Json(body): Json<NameUpdateDto>,
 ) -> Result<impl IntoResponse, HttpError> {
     body.validate()
         .map_err(|e| HttpError::bad_request(e.to_string()))?;
@@ -65,7 +65,7 @@ pub async fn update_user_name(
     let response = UserResponseDto {
         status: "success".to_string(),
         data: UserData {
-            user: filtered_user,
+            user: filtere_user,
         },
     };
 
@@ -74,7 +74,7 @@ pub async fn update_user_name(
 
 pub async fn update_user_password(
     Extension(app_state): Extension<Arc<AppState>>,
-    Extension(user): Extension<JWTAuthMiddeware>,
+    Extension(user): Extension<JWTAuthMiddleware>,
     Json(body): Json<UserPasswordUpdateDto>,
 ) -> Result<impl IntoResponse, HttpError> {
     body.validate()
@@ -141,7 +141,7 @@ pub async fn search_by_email(
     let filtered_email = FilterEmailDto::filter_emails(&users);
     let response_data = EmailListResponseDto {
         status: "success".to_string(),
-        emails: filter_email,
+        emails: filtered_email,
     };
 
     Ok(Json(response_data))
