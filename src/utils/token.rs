@@ -46,6 +46,8 @@ pub fn decode_token<T: Into<String>>(token: T, secret: &[u8]) -> Result<String, 
 
     match decode {
         Ok(token) => Ok(token.claims.sub),
-        Err(_) => Err(HttpError::unauthorized(ErrorMessage::InvalidToken.to_string()))
+        Err(_) => Err(HttpError::unauthorized(
+            ErrorMessage::InvalidToken.to_string(),
+        )),
     }
 }

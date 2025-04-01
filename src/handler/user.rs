@@ -64,9 +64,7 @@ pub async fn update_user_name(
 
     let response = UserResponseDto {
         status: "success".to_string(),
-        data: UserData {
-            user: filtere_user,
-        },
+        data: UserData { user: filtere_user },
     };
 
     Ok(Json(response))

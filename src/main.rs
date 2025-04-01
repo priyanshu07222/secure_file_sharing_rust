@@ -16,11 +16,11 @@ mod config;
 mod db;
 mod dto;
 mod error;
+mod handler;
+mod middleware;
 mod model;
 mod router;
 mod utils;
-mod handler;
-mod middleware;
 
 #[derive(Debug, Clone)]
 pub struct AppState {

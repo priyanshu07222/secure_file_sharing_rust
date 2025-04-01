@@ -88,7 +88,7 @@ pub trait UserExt {
 }
 
 // #[async_trait]
-// #[async_trait]
+#[async_trait]
 impl UserExt for DBClient {
     async fn get_user(
         &self,
@@ -231,7 +231,7 @@ impl UserExt for DBClient {
         user_id: Uuid,
         file_name: String,
         file_size: i64,
-        recipient_user_ud: Uuid,
+        recipient_user_id: Uuid,
         password: String,
         expiration_date: DateTime<Utc>,
         encrypted_aes_key: Vec<u8>,
@@ -262,7 +262,7 @@ impl UserExt for DBClient {
             VALUES ($1, $2, $3, $4, NOW())
             "#,
             file_id,
-            recipient_user_ud,
+            recipient_user_id,
             password,
             expiration_date
         )
